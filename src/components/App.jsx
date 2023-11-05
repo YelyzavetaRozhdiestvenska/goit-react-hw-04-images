@@ -25,20 +25,31 @@ export class App extends Component {
 
     if (prevQuery !== nextQuery || prevPage !== nextPage) {
       console.log(`HTTP запрос за ${nextQuery} page=${nextPage}`);
-      this.handleSearch();
+      // this.handleSearch();
 
       // Не забыть отрезать id/ от query
       // this.setState({ images: рeзультат запроса})
     };
   };
 
-  handleSearch = async () => {
-    const nextQuery = this.state.query;
+  handleSearch = async (e) => {
+    e.preventDefault()
+
+    let searchQuery
+
+    if (e) {
+      searchQuery = e.target.search.value 
+      this.changeQuery(searchQuery)
+    } else {
+      searchQuery = this.state.query.split('/')[1]
+    }
+
+    // const nextQuery = this.state.query;
     const nextPage = this.state.page;
 
     try {
       this.setState({ loading: true });
-      const getImage = await fetchImages(nextQuery, nextPage);
+      const getImage = await fetchImages(searchQuery, nextPage);
       if (getImage.length) {
         this.setState(prevState => ({
           images:
@@ -54,8 +65,9 @@ export class App extends Component {
   };
 
   handleSubmit = evt => {
+    alert(evt.target.search.value)
     evt.preventDefault();
-    this.changeQuery(evt.target.elements.query.value);
+    this.changeQuery(evt.target.search.value);
     evt.target.reset();
   };
 
@@ -69,14 +81,15 @@ export class App extends Component {
     return (
       <div>
         <header className="searchbar">
-          <form className="form" onSubmit={this.handleSubmit}>
-            <button className="button" onClick={this.handleSearch}>
+          <form className="form" onSubmit={this.handleSearch}>
+            <button className="button">
               <span className="button-label">Search</span>
             </button>
             <input
               className="input"
               type="text"
               autoComplete="off"
+              name="search"
               autoFocus
               placeholder="Search images and photos"
             />
@@ -85,7 +98,7 @@ export class App extends Component {
 
         <ul>
           Gallery
-          {/* {query.map(query => (
+          {/* {images.map(image => (
             <li className="gallery">
               <img src={webformatURL} alt={}/>
             </li>
@@ -99,6 +112,9 @@ export class App extends Component {
     );
   }
 }
+
+
+
 
 //
 // const API_KEY = '38086992-da778ca69db0828eccdceea4f';
