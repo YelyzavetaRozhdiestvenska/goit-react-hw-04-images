@@ -6,12 +6,17 @@ axios.defaults.baseURL = `https://pixabay.com/api/`;
 // https://pixabay.com/api/?q=cat&page=1&key=your_key&image_type=photo&orientation=horizontal&per_page=12
 
 export const fetchImages = async (query, page = 1) => {
-  
-  // alert(query)
-    try {
-    const response = await axios.get(
-      `?q=${query}&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
-    );
+  try {
+    const response = await axios.get("", {
+      params: {
+        key: API_KEY,
+        q: query,
+        image_type: "photo",
+        orientation: "horizontal",
+        page: page,
+        per_page: 12,
+      },
+    });
     return response.data.hits;
   } catch (error) {
     console.log(error);
