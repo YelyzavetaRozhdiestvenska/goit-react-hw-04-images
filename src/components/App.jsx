@@ -18,46 +18,51 @@ export class App extends Component {
     });
   };
 
-// Метод жизненного цикла: вызывается при обновлении компонента
- async componentDidUpdate(prevProps, prevState) {
+  // Метод жизненного цикла: вызывается при обновлении компонента
+  async componentDidUpdate(prevProps, prevState) {
+    if (
+      prevState.query !== this.state.query ||
+      prevState.page !== this.state.page
+    ) {
+      console.log(`HTTP запрос за ${this.state.query} page=${this.state.page}`);
 
-if (prevState.query !== this.state.query || prevState.page !== this.state.page ) {
-  console.log(`HTTP запрос за ${this.state.query} page=${this.state.page}`);
-  
+      // Получаем и добавляем изображения в состояние
+      this.setState({ loading: true });
+      const { query, page } = this.state;
+      const actualQuery = query.split('/')[1];
+      const getImage = await fetchImages({ query: actualQuery, page }); // HTTP запрос за query
+      
+      this.setState(prevState => ({
+        // this.setState({images: рузультат запроса})
+        images:
+          this.state.page > 1 ? [prevState.images, ...getImage] : getImage,
+        loading: false,
+      }));
+    }
+  }
 
-  // Получаем и добавляем изображения в состояние
-  this.setState({loading: true});
-  const { query, page } = this.state;
-  const actualQuery = query.split('/')[1];
-const getImage = await fetchImages({query: actualQuery, page});    // HTTP запрос за query
-console.log(getImage);
-
-this.setState(prevState => ({                                        // this.setState({images: рузультат запроса})
-  images: this.state.page > 1 ? [prevState.images, ...getImage] : getImage,
-  loading: false,
-})) };
-};
-
-// Загружает следующую порцию картинок
+  // Загружает следующую порцию картинок
   handleLoadMore = () => {
     this.setState(prevState => ({ page: prevState.page + 1 }));
   };
 
   render() {
-    // const {images, tags, webformatURL, id} = this.state
-    const {loading} = this.state;
+    const { loading, images } = this.state;
     return (
       <div>
         <header className="searchbar">
-          <form className="form" onSubmit={evt => {
+          <form
+            className="form"
+            onSubmit={evt => {
               evt.preventDefault();
               this.changeQuery(evt.target.elements.query.value);
               evt.target.reset();
-            }}>
-            <button className="button" >
+            }}
+          >
+            <button className="button">
               <span className="button-label">Search</span>
             </button>
-            <input 
+            <input
               className="input"
               type="text"
               autoComplete="off"
@@ -67,23 +72,19 @@ this.setState(prevState => ({                                        // this.set
             />
           </form>
         </header>
-        {loading ? (<div>Loading</div>) : (<ul> Gallery</ul>)}
-        {/* <ul images={images} key={id}>
+        {loading ? <div>Loading</div> : <ul images={images}>
           Gallery
-          {images.map(image => (
-            <li key={id} image={image} className="gallery">
-              <img src={webformatURL} alt={tags}/>
+          {images.map(({id, webformatURL, tags }) => (
+            <li key={id} className="gallery">
+              <img src={webformatURL} alt={tags} />
             </li>
-          ))}; 
-        </ul> */}
-
-        <div>
+          ))}
+          
+        </ul>}
+      <div>
           <button onClick={this.handleLoadMore}>Load more</button>
         </div>
       </div>
     );
   }
 }
-
-
-
