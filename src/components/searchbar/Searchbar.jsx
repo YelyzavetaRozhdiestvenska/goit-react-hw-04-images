@@ -1,3 +1,4 @@
+import { FcSearch } from 'react-icons/fc';
 import {
   Search,
   SearchForm,
@@ -11,8 +12,10 @@ export const Searchbar = ({ onSubmit }) => {
     <Search>
       <SearchForm onSubmit={onSubmit}>
         <SearchFormButton type="submit">
+          <FcSearch size={24} />
           <ButtonLabel>Search</ButtonLabel>
         </SearchFormButton>
+
         <Input
           className="input"
           name="query"

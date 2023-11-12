@@ -1,8 +1,13 @@
 import { fetchImages } from 'api';
 import React, { Component } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import { Wrapper } from './app.styled';
 import { Searchbar } from '../searchbar/Searchbar';
 import { ImageGallery } from '../imageGallery/ImageGallery';
+import { Loader } from '../loader/Loader';
+import { Button } from '../button/Button';
 
 export class App extends Component {
   state = {
@@ -10,6 +15,7 @@ export class App extends Component {
     images: [],
     page: 1,
     loading: false,
+    error: null,
   };
 
   changeQuery = newQuery => {
@@ -29,17 +35,6 @@ export class App extends Component {
     ) {
       // Получаем и добавляем изображения в состояние:
       this.getImages();
-      // const { query, page } = this.state;
-      // const actualQuery = query.split('/')[1];
-
-      // const getImage = await fetchImages(actualQuery, page); // HTTP запрос за query
-
-      // this.setState(prevState => ({
-      //   // this.setState({images: рузультат запроса})
-      //   images:
-      //     this.state.page > 1 ? [prevState.images, ...getImage] : getImage,
-      //   loading: false,
-      // }));
     }
   }
 
@@ -52,15 +47,19 @@ export class App extends Component {
       this.setState({ loading: true });
       const images = await fetchImages(actualQuery, page); // HTTP запрос за query
 
+      // Если изображения не найдены, выводим сообщение
+      if (images.length === 0) {
+        return toast.info('Image not found...');
+      }
+
       if (images.length) {
         this.setState(prevState => ({
           images: [...prevState.images, ...images],
         }));
-        this.setState({ loading: false });
+        this.setState({ loading: false, error: '' });
       }
     } catch (error) {
-      console.log(error);
-      this.setState({ loading: false });
+      this.setState({ loading: false, error: 'Something went wrong!' });
     }
   };
 
@@ -73,7 +72,7 @@ export class App extends Component {
   handleSubmit = evt => {
     evt.preventDefault();
     if (evt.target.elements.query.value.trim() === '') {
-      console.log('error');
+      toast.error('Input search images!');
       return;
     }
     this.changeQuery(evt.target.elements.query.value);
@@ -84,46 +83,13 @@ export class App extends Component {
     const { loading, images } = this.state;
     return (
       <Wrapper>
+        <ToastContainer />
         <Searchbar onSubmit={this.handleSubmit} />
-        {/* <header className="searchbar">
-          <form
-            className="form"
-            onSubmit={this.handleSubmit}
-            // onSubmit={evt => {
-            //   evt.preventDefault();
-            //   this.changeQuery(evt.target.elements.query.value);
-            //   evt.target.reset();
-            // }}
-          >
-            <button className="button">
-              <span className="button-label">Search</span>
-            </button>
-            <input
-              className="input"
-              type="text"
-              autoComplete="off"
-              name="query"
-              autoFocus
-              placeholder="Search images and photos"
-            />
-          </form>
-        </header> */}
-        {loading ? (
-          <div>Loading</div>
-        ) : (
-          <ImageGallery images={images} />
-          // <ul images={images}>
-          //   Gallery
-          //   {images.map(({ id, webformatURL, tags }) => (
-          //     <li key={id} className="gallery">
-          //       <img src={webformatURL} alt={tags} />
-          //     </li>
-          //   ))}
-          // </ul>
+        {loading && <Loader />}
+        {images.length > 0 && <ImageGallery images={images} />}
+        {images.length > 0 && (
+          <Button onClick={this.handleLoadMore}>Load more</Button>
         )}
-        <div>
-          <button onClick={this.handleLoadMore}>Load more</button>
-        </div>
       </Wrapper>
     );
   }
