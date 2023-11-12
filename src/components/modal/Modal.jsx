@@ -48,7 +48,7 @@ export class ModalImage extends Component {
         contentLabel="Example Modal"
       >
         <img src={largeImageURL} alt={tags} onLoad={this.handleImageLoad} />
-        <button onClick={this.closeModal}>close</button>
+        <button onClick={closeModal}>close</button>
       </Modal>
     );
   }

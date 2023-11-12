@@ -1,36 +1,6 @@
 import React, { Component } from 'react';
 import { ImageItem, Img } from './imageGalleryItem.styled';
-import Modal from 'react-modal';
-
-const customStyles = {
-  content: {
-    top: '52%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    padding: '0',
-    border: 'none',
-    maxWidth: 'calc (100vw - 48px)',
-    maxHeight: 'calc(100vh - 24px)',
-    overflow: 'none',
-  },
-  overlay: {
-    position: 'fixed',
-    top: '0',
-    left: '0',
-    width: '100vw',
-    height: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    zIndex: '1200',
-  },
-};
-
-Modal.setAppElement('#root');
+import { ModalImage } from '../modal/Modal';
 
 export class ImageGalleryItem extends Component {
   state = {
@@ -51,15 +21,12 @@ export class ImageGalleryItem extends Component {
             alt={image.tags}
             onClick={this.openModal}
           />
-          <Modal
-            isOpen={this.state.isModalOpen}
-            onRequestClose={this.closeModal}
-            style={customStyles}
-            contentLabel="Example Modal"
-          >
-            <img src={image.largeImageURL} alt={image.tags} />
-            <button onClick={this.closeModal}>close</button>
-          </Modal>
+          <ModalImage
+            isModalOpen={this.state.isModalOpen}
+            closeModal={this.closeModal}
+            largeImageURL={image.largeImageURL}
+            tags={image.tags}
+          />
         </ImageItem>
       </>
     );
