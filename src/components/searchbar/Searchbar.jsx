@@ -1,20 +1,27 @@
+import {
+  Search,
+  SearchForm,
+  SearchFormButton,
+  ButtonLabel,
+  Input,
+} from './searchbar.styled';
 
-
-export const Searchbar = ({onSubmit}) => {
-    return(
-        <header className="searchbar">
-          <form className="form" >
-            <button className="button" onClick={this.handleSearch}>
-              <span className="button-label">Search</span>
-            </button>
-            <input
-              className="input"
-              type="text"
-              autoComplete="off"
-              autoFocus
-              placeholder="Search images and photos"
-            />
-          </form>
-        </header>
-    );
+export const Searchbar = ({ onSubmit }) => {
+  return (
+    <Search>
+      <SearchForm onSubmit={onSubmit}>
+        <SearchFormButton type="submit">
+          <ButtonLabel>Search</ButtonLabel>
+        </SearchFormButton>
+        <Input
+          className="input"
+          name="query"
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+        />
+      </SearchForm>
+    </Search>
+  );
 };

@@ -2,13 +2,26 @@ import { createGlobalStyle } from 'styled-components';
 import 'modern-normalize';
 
 const GlobalStyle = createGlobalStyle`
+html {
+  box-sizing: border-box;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
   body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+   margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  color: #212121;
+  background-color: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
     
   }
 
@@ -17,7 +30,7 @@ const GlobalStyle = createGlobalStyle`
       monospace;
   }
 
-  h1,
+h1,
 h2,
 h3,
 h4,
@@ -27,11 +40,6 @@ p {
   margin: 0;
 }
 
-ul,
-ol {
-  margin: 0;
-  padding: 0;
-}
 
 img {
   display: block;
@@ -39,9 +47,6 @@ img {
   height: auto;
 }
 
-main {
-  border: 1px solid;
-}
 `;
- 
+
 export default GlobalStyle;
