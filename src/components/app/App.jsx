@@ -68,26 +68,15 @@ export class App extends Component {
     this.setState(prevState => ({ page: prevState.page + 1 }));
   };
 
-  // Метод для обработки отправки формы поиска
-  handleSubmit = evt => {
-    evt.preventDefault();
-    if (evt.target.elements.query.value.trim() === '') {
-      toast.error('Input search images!');
-      return;
-    }
-    this.changeQuery(evt.target.elements.query.value);
-    evt.target.reset();
-  };
-
   render() {
     const { loading, images } = this.state;
     return (
       <Wrapper>
         <ToastContainer />
-        <Searchbar onSubmit={this.handleSubmit} />
+        <Searchbar onSubmit={this.changeQuery} />
         {loading && <Loader />}
         {images.length > 0 && <ImageGallery images={images} />}
-        {images.length > 0 && (
+        {images.length > 0 && !loading && (
           <Button onClick={this.handleLoadMore}>Load more</Button>
         )}
       </Wrapper>
