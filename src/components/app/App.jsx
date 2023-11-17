@@ -69,14 +69,14 @@ export class App extends Component {
   };
 
   render() {
-    const { loading, images } = this.state;
+    const { loading, images, page } = this.state;
     return (
       <Wrapper>
         <ToastContainer />
         <Searchbar onSubmit={this.changeQuery} />
         {loading && <Loader />}
         {images.length > 0 && <ImageGallery images={images} />}
-        {images.length > 0 && !loading && (
+        {images.length > 0 && !loading && !page && (
           <Button onClick={this.handleLoadMore}>Load more</Button>
         )}
       </Wrapper>
