@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Modal from 'react-modal';
+import { useState } from 'react';
 
 const customStyles = {
   content: {
@@ -31,25 +32,26 @@ const customStyles = {
 
 Modal.setAppElement('#root');
 
-export class ModalImage extends Component {
-  state = {
-    isLoaded: false,
-  };
+export const ModalImage = ({
+  largeImageURL,
+  tags,
+  isModalOpen,
+  closeModal,
+}) => {
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  handleImageLoad = () => this.setState({ isLoaded: true });
+  const handleImageLoad = () => setIsLoaded(true);
 
-  render() {
-    const { largeImageURL, tags, isModalOpen, closeModal } = this.props;
-    return (
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        style={customStyles}
-        contentLabel="Example Modal"
-      >
-        <img src={largeImageURL} alt={tags} onLoad={this.handleImageLoad} />
-        <button onClick={closeModal}>close</button>
-      </Modal>
-    );
-  }
-}
+  return (
+    <Modal
+      isOpen={isModalOpen}
+      onRequestClose={closeModal}
+      style={customStyles}
+      contentLabel="Example Modal"
+      isLoaded={isLoaded}
+    >
+      <img src={largeImageURL} alt={tags} onLoad={handleImageLoad} />
+      <button onClick={closeModal}>close</button>
+    </Modal>
+  );
+};

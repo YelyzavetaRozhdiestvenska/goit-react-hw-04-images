@@ -1,5 +1,5 @@
 import { fetchImages } from 'api';
-import React, { Component } from 'react';
+import React from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from 'react-toastify';
@@ -8,78 +8,69 @@ import { Searchbar } from '../searchbar/Searchbar';
 import { ImageGallery } from '../imageGallery/ImageGallery';
 import { Loader } from '../loader/Loader';
 import { Button } from '../button/Button';
+import { useEffect, useState } from 'react';
 
-export class App extends Component {
-  state = {
-    query: '',
-    images: [],
-    page: 1,
-    loading: false,
-    error: null,
+export const App = () => {
+  const [query, setQuery] = useState('');
+  const [images, setImages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const changeQuery = newQuery => {
+    setQuery(`${Date.now()}/${newQuery}`);
+    // очищаем массив для последующего писка
+    setImages([]);
+    setPage(1);
   };
 
-  changeQuery = newQuery => {
-    this.setState({
-      query: `${Date.now()}/${newQuery}`,
-      // очищаем массив для последующего писка
-      images: [],
-      page: 1,
-    });
-  };
-
-  // Метод жизненного цикла: вызывается при обновлении компонента
-  async componentDidUpdate(prevProps, prevState) {
-    if (
-      prevState.query !== this.state.query ||
-      prevState.page !== this.state.page
-    ) {
-      // Получаем и добавляем изображения в состояние:
-      this.getImages();
+  useEffect(() => {
+    if (query === '') {
+      return;
     }
-  }
 
-  //  Метод для получения и добавление в состояние:
-  getImages = async () => {
-    const { query, page } = this.state;
-    const actualQuery = query.split('/')[1];
+    async function getImages() {
+      const actualQuery = query.split('/')[1];
 
-    try {
-      this.setState({ loading: true });
-      const images = await fetchImages(actualQuery, page); // HTTP запрос за query
+      try {
+        setLoading(true);
+        const images = await fetchImages(actualQuery, page); // HTTP запрос за query
 
-      // Если изображения не найдены, выводим сообщение
-      if (images.length === 0) {
-        return toast.info('Image not found...');
+        // Если изображения не найдены, выводим сообщение
+        if (images.length === 0) {
+          return toast.info('Image not found...');
+        }
+
+        if (images.length) {
+          setImages(prevImage => [...prevImage, ...images]);
+          setLoading(false);
+          setError('');
+        } else {
+          setLoading(false);
+          setError(error);
+        }
+      } catch (error) {
+        setLoading(false);
+        setError('Something went wrong!');
       }
-
-      if (images.length) {
-        this.setState(prevState => ({
-          images: [...prevState.images, ...images],
-        }));
-        this.setState({ loading: false, error: '' });
-      }
-    } catch (error) {
-      this.setState({ loading: false, error: 'Something went wrong!' });
     }
+    getImages();
+  }, [page, query, error]);
+
+  // Загружаем следующую страницу картинок
+  const handleLoadMore = () => {
+    setPage(prevPage => prevPage + 1);
   };
 
-  // Загружает следующую порцию картинок
-  handleLoadMore = () => {
-    this.setState(prevState => ({ page: prevState.page + 1 }));
-  };
-
-  render() {
-    const { loading, images } = this.state;
-    return (
-      <Wrapper>
-        <ToastContainer />
-        <Searchbar onSubmit={this.changeQuery} />
-        {loading && <Loader />}
-        {images.length > 0 && <ImageGallery images={images} />}
-        {images.length > 0 && !loading && (
-          <Button onClick={this.handleLoadMore}>Load more</Button>
-        )}
-      </Wrapper>
-    );
-  }
-}
+  return (
+    <Wrapper>
+      <ToastContainer />
+      <Searchbar onSubmit={changeQuery} />
+      {loading && <Loader />}
+      {images.length > 0 && <ImageGallery images={images} />}
+      {images.length > 0 && !loading && (
+        <Button onClick={handleLoadMore}>Load more</Button>
+      )}
+    </Wrapper>
+  );
+};
