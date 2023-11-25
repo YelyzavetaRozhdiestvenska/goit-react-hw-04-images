@@ -8,25 +8,15 @@ import {
   ButtonLabel,
   Input,
 } from './searchbar.styled';
-import { useState } from 'react';
 
-export const Searchbar = ({ onSubmit }) => {
-  const [query, setQuery] = useState('');
-  const [inputValue, setInputValue] = useState('');
-
-  const handleChange = evt => {
-    setInputValue(evt.target.value);
-  };
-
+export const Searchbar = ({ onSubmit, query }) => {
   const handleSubmit = evt => {
     evt.preventDefault();
-    setQuery(inputValue.trim());
-    if (inputValue.trim() === '') {
+    if (evt.target.elements.query.value.trim() === '') {
       toast.error('Input search images!');
       return;
     }
-    onSubmit(query);
-
+    onSubmit(evt.target.elements.query.value);
     evt.target.reset();
   };
 
@@ -44,8 +34,6 @@ export const Searchbar = ({ onSubmit }) => {
           autoComplete="off"
           autoFocus
           placeholder="Search images and photos"
-          value={inputValue}
-          onChange={handleChange}
         />
       </SearchForm>
     </Search>
